@@ -48,16 +48,21 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
   };
 
   const downloadContract = (item: Goods) => {
-    // 從 config_images 或 raw_message 中嘗試找到合同相關連結
-    const contractImages = item.config_images?.filter((img: string) => 
+    // 從 config_images 找到合同相關連結
+    const contractImages = item.config_images?.filter((img: string) =>
       img.includes('合同') || img.includes('contract') || img.includes('Contract') || img.includes('DOCX') || img.includes('docx')
     ) || [];
-    
+
     if (contractImages.length > 0) {
-      // 嘗試從路徑中提取檔案
       const firstContract = contractImages[0];
-      // 如果是本地路徑，無法直接下載，提示用戶
-      alert(`合同檔案路徑：${firstContract}\n請聯繫管理員獲取檔案。`);
+      // 直接用完整 URL 下載
+      const url = firstContract.startsWith('http') ? firstContract : `${window.location.origin}${firstContract}`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = url.split('/').pop() || 'contract.docx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } else {
       alert('此貨源暫無合同檔案可供下載。');
     }
