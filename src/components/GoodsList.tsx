@@ -10,6 +10,7 @@ interface GoodsListProps {
 export default function GoodsList({ initialGoods }: GoodsListProps) {
   const [goods, setGoods] = useState<Goods[]>(initialGoods);
   const [showArchived, setShowArchived] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Goods | null>(null);
 
   // 從 URL 讀取 archive 狀態
   useEffect(() => {
@@ -34,29 +35,38 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
     });
   }, [goods, showArchived]);
 
-  const getStageColor = (stage: string) => {
-    switch (stage) {
-      case '新收貨': return 'bg-blue-100 text-blue-800';
-      case '有合同草案': return 'bg-yellow-100 text-yellow-800';
-      case '待合同簽署': return 'bg-orange-100 text-orange-800';
-      case '已結束': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusColor = (status: string | null) => {
-    if (!status) return 'bg-gray-100 text-gray-800';
-    if (status.includes('期貨')) return 'bg-blue-100 text-blue-800';
-    if (status.includes('現貨')) return 'bg-green-100 text-green-800';
-    if (status.includes('獨家')) return 'bg-purple-100 text-purple-800';
-    if (status.includes('失效') || status.includes('售罄')) return 'bg-red-100 text-red-800';
-    return 'bg-gray-100 text-gray-800';
-  };
-
-  const copyShareLink = (item: Goods) => {
+  const copyShareLink = (item: Goods, e: React.MouseEvent) => {
+    e.stopPropagation();
     const url = `${window.location.origin}${window.location.pathname}?action_code=${encodeURIComponent(item.action_code || '')}&code=${encodeURIComponent(item.code)}`;
     navigator.clipboard.writeText(url);
     alert('分享連結已複製！');
+  };
+
+  const copyRawMessage = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert('貨源訊息文字版已複製！');
+  };
+
+  const downloadContract = (item: Goods) => {
+    // 從 config_images 或 raw_message 中嘗試找到合同相關連結
+    const contractImages = item.config_images?.filter((img: string) => 
+      img.includes('合同') || img.includes('contract') || img.includes('Contract') || img.includes('DOCX') || img.includes('docx')
+    ) || [];
+    
+    if (contractImages.length > 0) {
+      // 嘗試從路徑中提取檔案
+      const firstContract = contractImages[0];
+      // 如果是本地路徑，無法直接下載，提示用戶
+      alert(`合同檔案路徑：${firstContract}\n請聯繫管理員獲取檔案。`);
+    } else {
+      alert('此貨源暫無合同檔案可供下載。');
+    }
+  };
+
+  const hasContract = (item: Goods) => {
+    return item.config_images?.some((img: string) => 
+      img.includes('合同') || img.includes('contract') || img.includes('Contract') || img.includes('DOCX') || img.includes('docx')
+    ) || false;
   };
 
   if (filteredGoods.length === 0) {
@@ -91,14 +101,43 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
       {/* Card Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filteredGoods.map((item) => (
-          <GoodsCard key={item.id} item={item} onShare={() => copyShareLink(item)} />
+          <GoodsCard 
+            key={item.id} 
+            item={item} 
+            onShare={(e) => copyShareLink(item, e)}
+            onClick={() => setSelectedItem(item)}
+            hasContract={hasContract(item)}
+            onDownloadContract={() => downloadContract(item)}
+          />
         ))}
       </div>
+
+      {/* Detail Modal */}
+      {selectedItem && (
+        <DetailModal 
+          item={selectedItem} 
+          onClose={() => setSelectedItem(null)}
+          onCopyRawMessage={copyRawMessage}
+          onDownloadContract={downloadContract}
+        />
+      )}
     </div>
   );
 }
 
-function GoodsCard({ item, onShare }: { item: Goods; onShare: () => void }) {
+function GoodsCard({ 
+  item, 
+  onShare, 
+  onClick, 
+  hasContract,
+  onDownloadContract 
+}: { 
+  item: Goods; 
+  onShare: (e: React.MouseEvent) => void;
+  onClick: () => void;
+  hasContract: boolean;
+  onDownloadContract: () => void;
+}) {
   const getStageColor = (stage: string) => {
     switch (stage) {
       case '新收貨': return 'bg-blue-100 text-blue-800';
@@ -119,7 +158,10 @@ function GoodsCard({ item, onShare }: { item: Goods; onShare: () => void }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
+    <div 
+      className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex items-start justify-between mb-3">
         <span className="font-semibold text-gray-900 text-lg">{item.action_code || '無行動代號'}</span>
         <span className={`px-2 py-0.5 rounded-full text-xs ${getStageColor(item.stage)}`}>
@@ -154,11 +196,226 @@ function GoodsCard({ item, onShare }: { item: Goods; onShare: () => void }) {
 
       <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
         <button
-          onClick={onShare}
+          onClick={(e) => {
+            e.stopPropagation();
+            onShare(e);
+          }}
           className="flex-1 text-center py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
         >
           分享連結
         </button>
+        {hasContract && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDownloadContract();
+            }}
+            className="flex-1 text-center py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
+          >
+            下載合同
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DetailModal({ 
+  item, 
+  onClose, 
+  onCopyRawMessage,
+  onDownloadContract 
+}: { 
+  item: Goods; 
+  onClose: () => void;
+  onCopyRawMessage: (text: string) => void;
+  onDownloadContract: (item: Goods) => void;
+}) {
+  const getStageColor = (stage: string) => {
+    switch (stage) {
+      case '新收貨': return 'bg-blue-100 text-blue-800';
+      case '有合同草案': return 'bg-yellow-100 text-yellow-800';
+      case '待合同簽署': return 'bg-orange-100 text-orange-800';
+      case '已結束': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusColor = (status: string | null) => {
+    if (!status) return 'bg-gray-100 text-gray-800';
+    if (status.includes('期貨')) return 'bg-blue-100 text-blue-800';
+    if (status.includes('現貨')) return 'bg-green-100 text-green-800';
+    if (status.includes('獨家')) return 'bg-purple-100 text-purple-800';
+    if (status.includes('失效') || status.includes('售罄')) return 'bg-red-100 text-red-800';
+    return 'bg-gray-100 text-gray-800';
+  };
+
+  const hasContract = () => {
+    return item.config_images?.some((img: string) => 
+      img.includes('合同') || img.includes('contract') || img.includes('Contract') || img.includes('DOCX') || img.includes('docx')
+    ) || false;
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between border-b border-gray-200 p-4">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{item.action_code || '無行動代號'}</h2>
+            <div className="flex items-center gap-3 mt-1 text-sm">
+              <span className={`px-2 py-0.5 rounded-full text-xs ${getStageColor(item.stage)}`}>{item.stage}</span>
+              <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(item.status)}`}>{item.status || '—'}</span>
+              <span className="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">{item.code}</span>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          {/* Basic Info Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">品牌/型號/儲存</p>
+              <p className="font-medium">{item.brand} {item.model} {item.storage}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">數量</p>
+              <p className="font-medium">{item.quantity} 台</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">價格</p>
+              <p className="font-medium text-primary-600">
+                {item.base_price_rmb_wan ? `${item.base_price_rmb_wan} 萬 RMB` : ''}
+                {item.base_price_usd_wan ? ` / ${item.base_price_usd_wan} 萬 USD` : ''}
+              </p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">來源</p>
+              <p className="font-medium">{item.source_tag || '—'}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 md:col-span-2">
+              <p className="text-xs text-gray-500">交地/交期</p>
+              <p className="font-medium">{item.delivery_location || '—'} / {item.delivery_time || '—'}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">接受買方主體</p>
+              <p className="font-medium text-sm">{item.accepted_buyer_types?.join('、') || '—'}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">保函要求</p>
+              <p className="font-medium text-sm">{item.guarantee_requirement || '—'}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-500">保函狀態</p>
+              <p className="font-medium">{item.guarantee_status || '—'}</p>
+            </div>
+          </div>
+
+          {/* Raw Message Section */}
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-gray-900">貨源訊息文字版</h3>
+              <button
+                onClick={() => onCopyRawMessage(item.raw_message || '無原始訊息')}
+                className="px-3 py-1.5 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
+              >
+                📋 複製文字版
+              </button>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto">
+              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono leading-relaxed">
+                {item.raw_message || '無原始訊息'}
+              </pre>
+            </div>
+          </div>
+
+          {/* Trade Process */}
+          {item.trade_process && (
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">交易流程</h3>
+              <div className="bg-gray-50 rounded-lg p-4 whitespace-pre-wrap text-sm text-gray-700">
+                {item.trade_process}
+              </div>
+            </div>
+          )}
+
+          {/* Gaps */}
+          {item.gaps && item.gaps.length > 0 && (
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">關鍵缺口待補</h3>
+              <ul className="space-y-2">
+                {item.gaps.map((gap, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm text-gray-700 bg-gray-50 rounded-lg p-3">
+                    <span className="text-gray-400">□</span>
+                    <span>{gap}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Progress Log */}
+          {item.progress_log && item.progress_log.length > 0 && (
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">進度流水</h3>
+              <ul className="space-y-2">
+                {item.progress_log.map((log, idx) => (
+                  <li key={idx} className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">
+                    {log}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Config Images / Contract Files */}
+          {item.config_images && item.config_images.length > 0 && (
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">配置圖片 / 合同文件</h3>
+              <div className="space-y-2">
+                {item.config_images.map((img, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                    <span className="text-sm text-gray-700 truncate max-w-md">{img}</span>
+                    {hasContract() && (
+                      <button
+                        onClick={() => onDownloadContract(item)}
+                        className="px-3 py-1.5 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
+                      >
+                        下載合同
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="border-t border-gray-200 p-4 flex gap-3 justify-end">
+          <button
+            onClick={() => onCopyRawMessage(item.raw_message || '無原始訊息')}
+            className="px-4 py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
+          >
+            📋 複製文字版
+          </button>
+          {hasContract() && (
+            <button
+              onClick={() => onDownloadContract(item)}
+              className="px-4 py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
+            >
+              下載合同
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
+          >
+            關閉
+          </button>
+        </div>
       </div>
     </div>
   );
