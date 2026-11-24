@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { Goods } from '@/types';
 import { createServerClient } from '@/lib/supabase';
 import GoodsList from '@/components/GoodsList';
+import VisitorCounter from '@/components/VisitorCounter';
 
 interface HomeProps {
   initialGoods: Goods[];
@@ -30,6 +31,7 @@ export default function Home({ initialGoods }: HomeProps) {
                 <h1 className="text-xl font-bold text-gray-900">永豐算力顧問團隊</h1>
                 <span className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 rounded-full">貨源看板</span>
               </div>
+              <VisitorCounter />
             </div>
           </div>
         </header>
