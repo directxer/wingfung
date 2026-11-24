@@ -12,8 +12,8 @@ export default function Home({ initialGoods }: HomeProps) {
   return (
     <>
       <Head>
-        <title>居間江湖 - 貨源管理看板</title>
-        <meta name="description" content="高價值硬體居間撮合：SMC B300、H200、H100 等伺服器/GPU 貨源查詢與分享" />
+        <title>永豐算力顧問團隊 - 貨源管理看板</title>
+        <meta name="description" content="永豐算力顧問團隊：高價值硬體撮合 SMC B300、H200、H100 等伺服器/GPU 貨源查詢與分享" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -27,7 +27,7 @@ export default function Home({ initialGoods }: HomeProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <h1 className="text-xl font-bold text-gray-900">居間江湖</h1>
+                <h1 className="text-xl font-bold text-gray-900">永豐算力顧問團隊</h1>
                 <span className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 rounded-full">貨源看板</span>
               </div>
               <div className="hidden md:flex items-center gap-4 text-sm text-gray-500">
