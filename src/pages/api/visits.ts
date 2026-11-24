@@ -3,12 +3,12 @@ import { createServerClient } from '@/lib/supabase';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ count: number } | { error: string }>
+  res: NextApiResponse<{ count: number; debug?: string } | { error: string; debug?: string }>
 ) {
   const supabase = createServerClient();
 
   if (!supabase) {
-    return res.status(500).json({ error: 'Supabase not configured' });
+    return res.status(500).json({ error: 'Supabase not configured', debug: 'No client' });
   }
 
   try {
@@ -24,7 +24,7 @@ export default async function handler(
         .single();
 
       if (selectError || !visitData) {
-        return res.status(500).json({ error: 'Failed to get visit count' });
+        return res.status(500).json({ error: 'Failed to get visit count', debug: `selectError: ${JSON.stringify(selectError)}` });
       }
 
       const newCount = visitData.count + 1;
@@ -34,15 +34,15 @@ export default async function handler(
         .eq('id', visitData.id);
 
       if (updateError) {
-        return res.status(500).json({ error: 'Failed to update visit count' });
+        return res.status(500).json({ error: 'Failed to update visit count', debug: `updateError: ${JSON.stringify(updateError)}` });
       }
 
-      return res.status(200).json({ count: newCount });
+      return res.status(200).json({ count: newCount, debug: 'fallback success' });
     }
 
-    return res.status(200).json({ count: data });
+    return res.status(200).json({ count: data, debug: 'rpc success' });
   } catch (err) {
     console.error('Visit counter error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error', debug: String(err) });
   }
 }
