@@ -323,28 +323,18 @@ function DetailModal({
             )}
           </div>
 
-          {/* Raw Message Section */}
-          <div className="border-t border-gray-200 pt-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-gray-900">貨源訊息文字版</h3>
-              <button
-                onClick={() => onCopyRawMessage(item.raw_message || '無原始訊息')}
-                className="px-3 py-1.5 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
-              >
-                📋 複製文字版
-              </button>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono leading-relaxed">
-                {item.raw_message || '無原始訊息'}
-              </pre>
-            </div>
-          </div>
-
           {/* Trade Process */}
           {item.trade_process && (
             <div className="border-t border-gray-200 pt-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">交易流程</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-gray-900">交易流程</h3>
+                <button
+                  onClick={() => onCopyRawMessage(item.trade_process || '無交易流程')}
+                  className="px-3 py-1.5 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
+                >
+                  📋 複製交易流程
+                </button>
+              </div>
               <div className="bg-gray-50 rounded-lg p-4 whitespace-pre-wrap text-sm text-gray-700">
                 {item.trade_process}
               </div>
@@ -398,12 +388,6 @@ function DetailModal({
 
         {/* Footer Actions */}
         <div className="border-t border-gray-200 p-4 flex gap-3 justify-end">
-          <button
-            onClick={() => onCopyRawMessage(item.raw_message || '無原始訊息')}
-            className="px-4 py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
-          >
-            📋 複製文字版
-          </button>
           {hasContract() && (
             <button
               onClick={() => onDownloadContract(item)}
