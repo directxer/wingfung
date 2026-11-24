@@ -382,7 +382,12 @@ function DetailModal({
                   
                   return (
                     <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
-                      <span className="text-sm text-gray-700 truncate max-w-md">{img}</span>
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {isImage && downloadUrl && (
+                          <ImagePreview src={downloadUrl} alt={`配置圖片 ${idx + 1}`} />
+                        )}
+                        <span className="text-sm text-gray-700 truncate max-w-md">{img}</span>
+                      </div>
                       <div className="flex gap-2">
                         {downloadUrl && (
                           <a
@@ -434,6 +439,38 @@ function DetailModal({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ImagePreview({ src, alt }: { src: string; alt: string }) {
+  const [showFull, setShowFull] = useState(false);
+  
+  return (
+    <div className="relative">
+      <img
+        src={src}
+        alt={alt}
+        className="w-16 h-16 object-cover rounded cursor-pointer border border-gray-200 hover:opacity-80 transition-opacity"
+        onClick={() => setShowFull(true)}
+        loading="lazy"
+      />
+      {showFull && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90" onClick={() => setShowFull(false)}>
+          <img
+            src={src}
+            alt={alt}
+            className="max-w-[90vw] max-h-[90vh] object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="absolute top-4 right-4 text-white text-3xl hover:text-gray-300"
+            onClick={() => setShowFull(false)}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }
