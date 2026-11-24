@@ -341,35 +341,6 @@ function DetailModal({
             </div>
           )}
 
-          {/* Gaps */}
-          {item.gaps && item.gaps.length > 0 && (
-            <div className="border-t border-gray-200 pt-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">關鍵缺口待補</h3>
-              <ul className="space-y-2">
-                {item.gaps.map((gap, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm text-gray-700 bg-gray-50 rounded-lg p-3">
-                    <span className="text-gray-400">□</span>
-                    <span>{gap}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Progress Log */}
-          {item.progress_log && item.progress_log.length > 0 && (
-            <div className="border-t border-gray-200 pt-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">進度流水</h3>
-              <ul className="space-y-2">
-                {item.progress_log.map((log, idx) => (
-                  <li key={idx} className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">
-                    {log}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
           {/* Config Images / Contract Files */}
           {item.config_images && item.config_images.length > 0 && (
             <div className="border-t border-gray-200 pt-4">
