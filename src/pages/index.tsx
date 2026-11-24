@@ -30,21 +30,11 @@ export default function Home({ initialGoods }: HomeProps) {
                 <h1 className="text-xl font-bold text-gray-900">永豐算力顧問團隊</h1>
                 <span className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 rounded-full">貨源看板</span>
               </div>
-              <div className="hidden md:flex items-center gap-4 text-sm text-gray-500">
-                <span>資料即時同步自 Obsidian Vault</span>
-              </div>
             </div>
           </div>
         </header>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">手上貨源總覽</h2>
-            <p className="text-gray-500 mt-1">
-              共 {initialGoods.length} 筆貨源資料 · 來源：Obsidian Vault → Supabase 即時同步
-            </p>
-          </div>
-
           <GoodsList initialGoods={initialGoods} />
         </div>
 
