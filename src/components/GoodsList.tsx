@@ -375,19 +375,36 @@ function DetailModal({
             <div className="border-t border-gray-200 pt-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">配置圖片 / 合同文件</h3>
               <div className="space-y-2">
-                {item.config_images.map((img, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
-                    <span className="text-sm text-gray-700 truncate max-w-md">{img}</span>
-                    {hasContract() && (
-                      <button
-                        onClick={() => onDownloadContract(item)}
-                        className="px-3 py-1.5 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
-                      >
-                        下載合同
-                      </button>
-                    )}
-                  </div>
-                ))}
+                {item.config_images.map((img, idx) => {
+                  const isImage = img.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                  const isLocalPath = img.startsWith('/images/');
+                  const downloadUrl = isLocalPath ? img : (img.startsWith('http') ? img : null);
+                  
+                  return (
+                    <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                      <span className="text-sm text-gray-700 truncate max-w-md">{img}</span>
+                      <div className="flex gap-2">
+                        {downloadUrl && (
+                          <a
+                            href={downloadUrl}
+                            download
+                            className="px-3 py-1.5 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                          >
+                            {isImage ? '📥 下載圖片' : '📥 下載檔案'}
+                          </a>
+                        )}
+                        {hasContract() && img.match(/合同|contract|Contract|DOCX|docx/i) && (
+                          <button
+                            onClick={() => onDownloadContract(item)}
+                            className="px-3 py-1.5 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
+                          >
+                            下載合同
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
