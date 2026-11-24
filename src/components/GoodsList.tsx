@@ -304,7 +304,7 @@ function DetailModal({
               <p className="font-medium text-sm">{item.accepted_buyer_types?.join('、') || '—'}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-500">保函要求</p>
+              <p className="text-xs text-gray-500">提供保函</p>
               <p className="font-medium text-sm">{item.guarantee_requirement || '—'}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
