@@ -181,9 +181,6 @@ function GoodsCard({
           <span>🏷</span>
           <span>{item.source_tag || '—'}</span>
         </p>
-        <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${statusBadge.className}`}>
-          {statusBadge.label}
-        </span>
       </div>
 
       <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
