@@ -37,9 +37,9 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
 
   const copyShareLink = (item: Goods, e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}${window.location.pathname}?action_code=${encodeURIComponent(item.action_code || '')}&code=${encodeURIComponent(item.code)}`;
-    navigator.clipboard.writeText(url);
-    alert('分享連結已複製！');
+    const tradeProcess = item.trade_process || '無交易流程';
+    navigator.clipboard.writeText(tradeProcess);
+    alert('交易流程已複製！');
   };
 
   const copyRawMessage = (text: string) => {
@@ -202,7 +202,7 @@ function GoodsCard({
           }}
           className="flex-1 text-center py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
         >
-          分享連結
+          複製交易流程
         </button>
         {hasContract && (
           <button
