@@ -308,7 +308,7 @@ function DetailModal({
               <p className="font-medium text-sm">{item.guarantee_requirement || '—'}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-500">保函狀態</p>
+              <p className="text-xs text-gray-500">付款方法</p>
               <p className="font-medium">{item.guarantee_status || '—'}</p>
             </div>
           </div>
