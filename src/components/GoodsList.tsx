@@ -138,24 +138,16 @@ function GoodsCard({
   hasContract: boolean;
   onDownloadContract: () => void;
 }) {
-  const getStageColor = (stage: string) => {
-    switch (stage) {
-      case '新收貨': return 'bg-blue-100 text-blue-800';
-      case '有合同草案': return 'bg-yellow-100 text-yellow-800';
-      case '待合同簽署': return 'bg-orange-100 text-orange-800';
-      case '已結束': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getStatusBadge = (status: string | null) => {
+    if (!status) return { label: '—', className: 'bg-gray-100 text-gray-600' };
+    if (status.includes('現貨')) return { label: '⚡ 現貨', className: 'bg-green-100 text-green-800' };
+    if (status.includes('期貨')) return { label: '📦 期貨', className: 'bg-blue-100 text-blue-800' };
+    if (status.includes('獨家')) return { label: '🔒 獨家', className: 'bg-purple-100 text-purple-800' };
+    if (status.includes('失效') || status.includes('售罄')) return { label: '❌ 已失效', className: 'bg-red-100 text-red-800' };
+    return { label: status, className: 'bg-gray-100 text-gray-800' };
   };
 
-  const getStatusColor = (status: string | null) => {
-    if (!status) return 'bg-gray-100 text-gray-800';
-    if (status.includes('期貨')) return 'bg-blue-100 text-blue-800';
-    if (status.includes('現貨')) return 'bg-green-100 text-green-800';
-    if (status.includes('獨家')) return 'bg-purple-100 text-purple-800';
-    if (status.includes('失效') || status.includes('售罄')) return 'bg-red-100 text-red-800';
-    return 'bg-gray-100 text-gray-800';
-  };
+  const statusBadge = getStatusBadge(item.status);
 
   return (
     <div 
@@ -164,8 +156,8 @@ function GoodsCard({
     >
       <div className="flex items-start justify-between mb-3">
         <span className="font-semibold text-gray-900 text-lg">{item.action_code || '無行動代號'}</span>
-        <span className={`px-2 py-0.5 rounded-full text-xs ${getStageColor(item.stage)}`}>
-          {item.stage}
+        <span className={`px-2 py-0.5 rounded-full text-xs ${statusBadge.className}`}>
+          {statusBadge.label}
         </span>
       </div>
 
@@ -189,8 +181,8 @@ function GoodsCard({
           <span>🏷</span>
           <span>{item.source_tag || '—'}</span>
         </p>
-        <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${getStatusColor(item.status)}`}>
-          {item.status || '—'}
+        <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${statusBadge.className}`}>
+          {statusBadge.label}
         </span>
       </div>
 
