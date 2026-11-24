@@ -21,6 +21,7 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [showArchived, setShowArchived] = useState(false);
 
   // 從 URL 讀取初始篩選
   useEffect(() => {
@@ -36,21 +37,28 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
     };
     setFilters(newFilters);
     setSearchQuery(params.get('q') || '');
+    setShowArchived(params.get('archived') === '1');
   }, []);
 
   // 更新 URL
-  const updateURL = (newFilters: FilterState, query: string) => {
+  const updateURL = (newFilters: FilterState, query: string, showArchivedParam: boolean) => {
     const params = new URLSearchParams();
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value) params.set(key.replace(/([A-Z])/g, '_$1').toLowerCase(), value);
     });
     if (query) params.set('q', query);
+    if (showArchivedParam) params.set('archived', '1');
     window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
   };
 
   // 篩選邏輯
   const filteredGoods = useMemo(() => {
     return goods.filter((item) => {
+      // 預設隱藏已結束/已失效貨源
+      const isArchived = item.stage === '已結束' || 
+                         (item.status && (item.status.includes('已售罄') || item.status.includes('失效')));
+      if (!showArchived && isArchived) return false;
+
       if (filters.actionCode && !item.action_code?.includes(filters.actionCode)) return false;
       if (filters.brand && item.brand !== filters.brand) return false;
       if (filters.model && item.model !== filters.model) return false;
@@ -65,7 +73,7 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
       }
       return true;
     });
-  }, [goods, filters, searchQuery]);
+  }, [goods, filters, searchQuery, showArchived]);
 
   // 統計資料
   const stats = useMemo(() => {
@@ -78,12 +86,12 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    updateURL(newFilters, searchQuery);
+    updateURL(newFilters, searchQuery, showArchived);
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    updateURL(filters, value);
+    updateURL(filters, value, showArchived);
   };
 
   const clearFilters = () => {
@@ -93,7 +101,7 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
     };
     setFilters(emptyFilters);
     setSearchQuery('');
-    updateURL(emptyFilters, '');
+    updateURL(emptyFilters, '', showArchived);
   };
 
   const getStageColor = (stage: string) => {
@@ -172,7 +180,19 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showArchived}
+                onChange={(e) => {
+                  setShowArchived(e.target.checked);
+                  updateURL(filters, searchQuery, e.target.checked);
+                }}
+                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span>顯示已結束/失效貨源</span>
+            </label>
             <button
               onClick={() => setViewMode('cards')}
               className={`px-3 py-1.5 rounded-lg text-sm ${viewMode === 'cards' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-700'}`}
