@@ -256,6 +256,12 @@ function DetailModal({
     ) || false;
   };
 
+  const hasGuarantee = () => {
+    const req = item.guarantee_requirement || '';
+    const noGuaranteeKeywords = ['不提供', '無特定要求', '不需要', '無', '不適用'];
+    return !noGuaranteeKeywords.some(kw => req.includes(kw));
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -303,14 +309,18 @@ function DetailModal({
               <p className="text-xs text-gray-500">接受買方主體</p>
               <p className="font-medium text-sm">{item.accepted_buyer_types?.join('、') || '—'}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-500">提供保函</p>
-              <p className="font-medium text-sm">{item.guarantee_requirement || '—'}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-500">付款方法</p>
-              <p className="font-medium">{item.guarantee_status || '—'}</p>
-            </div>
+            {hasGuarantee() && (
+              <>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500">提供保函</p>
+                  <p className="font-medium text-sm">{item.guarantee_requirement || '—'}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500">付款方法</p>
+                  <p className="font-medium">{item.guarantee_status || '—'}</p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Raw Message Section */}
