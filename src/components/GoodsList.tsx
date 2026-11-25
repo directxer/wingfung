@@ -11,6 +11,24 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
   const [goods, setGoods] = useState<Goods[]>(initialGoods);
   const [showArchived, setShowArchived] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Goods | null>(null);
+  const [loading, setLoading] = useState(initialGoods.length === 0);
+
+  // 客戶端 fetch 貨源資料（靜態導出時使用）
+  useEffect(() => {
+    if (initialGoods.length === 0) {
+      // 必須指向 Vercel，因為 EdgeOne Pages 不支援 API Routes
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://wingfung.vercel.app';
+      fetch(`${apiBase}/api/goods`)
+        .then((res) => res.json())
+        .then((data) => {
+          setGoods(data);
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+    }
+  }, [initialGoods.length]);
 
   // 從 URL 讀取 archive 狀態
   useEffect(() => {
@@ -69,12 +87,24 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
   };
 
   const hasContract = (item: Goods) => {
-    return item.config_images?.some((img: string) => 
-      img.includes('合同') || img.includes('contract') || img.includes('Contract') || img.includes('DOCX') || img.includes('docx')
-    ) || false;
-  };
+      return item.config_images?.some((img: string) =>
+        img.includes('合同') || img.includes('contract') || img.includes('Contract') || img.includes('DOCX') || img.includes('docx')
+      ) || false;
+    };
 
-  if (filteredGoods.length === 0) {
+    // 載入中狀態
+    if (loading) {
+      return (
+        <div className="text-center py-12 text-gray-500">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-3 border-primary-500 border-t-transparent" />
+            <p className="text-lg">載入貨源資料中...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (filteredGoods.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500">
         <p className="text-lg">沒有符合條件的貨源</p>
