@@ -16,8 +16,8 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
   // 客戶端 fetch 貨源資料（靜態導出時使用）
   useEffect(() => {
     if (initialGoods.length === 0) {
-      // 必須指向 Vercel，因為 EdgeOne Pages 不支援 API Routes
-      const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://wingfung.vercel.app';
+      // 直連 Vercel API，EdgeOne Pages 不支援 API Routes
+      const apiBase = 'https://wingfung.vercel.app';
       fetch(`${apiBase}/api/goods`)
         .then((res) => res.json())
         .then((data) => {

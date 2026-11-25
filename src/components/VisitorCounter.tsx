@@ -7,8 +7,8 @@ export default function VisitorCounter() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 必須指向 Vercel，因為 EdgeOne Pages 不支援 API Routes
-    const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'https://wingfung.vercel.app';
+    // 直連 Vercel API，EdgeOne Pages 不支援 API Routes
+    const apiBase = 'https://wingfung.vercel.app';
     fetch(`${apiBase}/api/visits`)
       .then((res) => res.json())
       .then((data) => {
