@@ -6,10 +6,26 @@ interface ErrorResponse {
   error: string;
 }
 
+// CORS headers for cross-origin requests (e.g., from EdgeOne Pages)
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Goods[] | ErrorResponse>
 ) {
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    Object.entries(corsHeaders).forEach(([key, value]) => res.setHeader(key, value));
+    return res.status(200).end();
+  }
+
+  // Apply CORS headers to all responses
+  Object.entries(corsHeaders).forEach(([key, value]) => res.setHeader(key, value));
+
   const supabase = createServerClient();
 
   if (!supabase) {
