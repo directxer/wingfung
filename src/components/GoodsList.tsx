@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Goods } from '@/types';
+import { toSimplified } from '@/lib/zh-convert';
 
 interface GoodsListProps {
   initialGoods: Goods[];
@@ -98,7 +99,7 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
         <div className="text-center py-12 text-gray-500">
           <div className="flex flex-col items-center gap-4">
             <div className="animate-spin rounded-full h-10 w-10 border-3 border-primary-500 border-t-transparent" />
-            <p className="text-lg">載入貨源資料中...</p>
+            <p className="text-lg">加载货源数据中...</p>
           </div>
         </div>
       );
@@ -107,9 +108,9 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
     if (filteredGoods.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500">
-        <p className="text-lg">沒有符合條件的貨源</p>
+        <p className="text-lg">没有符合条件的货源</p>
         {showArchived ? null : (
-          <p className="text-sm mt-2">嘗試勾選「顯示已結束/失效貨源」</p>
+          <p className="text-sm mt-2">尝试勾选「显示已结束/失效货源」</p>
         )}
       </div>
     );
@@ -129,7 +130,7 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
             }}
             className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           />
-          <span>顯示已結束/失效貨源</span>
+          <span>显示已结束/失效货源</span>
         </label>
       </div>
 
@@ -190,15 +191,15 @@ function GoodsCard({
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-3">
-        <span className="font-semibold text-gray-900 text-lg">{item.action_code || '無行動代號'}</span>
+        <span className="font-semibold text-gray-900 text-lg">{toSimplified(item.action_code || '無行動代號')}</span>
         <span className={`px-2 py-0.5 rounded-full text-xs ${statusBadge.className}`}>
-          {statusBadge.label}
+          {toSimplified(statusBadge.label)}
         </span>
       </div>
 
       <div className="space-y-2 text-sm">
         <p className="font-mono text-xs text-gray-500 truncate">{item.code}</p>
-        <p className="font-medium">{item.brand} {item.model} {item.storage}</p>
+        <p className="font-medium">{toSimplified(`${item.brand} ${item.model} ${item.storage}`)}</p>
         <p className="text-gray-600">{item.quantity} 台</p>
         <p className="font-semibold text-primary-600">
           {item.base_price_rmb_wan ? `${item.base_price_rmb_wan} 萬 RMB` : ''}
@@ -206,15 +207,15 @@ function GoodsCard({
         </p>
         <p className="text-gray-500 flex items-center gap-1">
           <span>📍</span>
-          <span>{item.delivery_location || '—'}</span>
+          <span>{toSimplified(item.delivery_location || '—')}</span>
         </p>
         <p className="text-gray-500 flex items-center gap-1">
           <span>⏱</span>
-          <span>{item.delivery_time || '—'}</span>
+          <span>{toSimplified(item.delivery_time || '—')}</span>
         </p>
         <p className="text-gray-500 flex items-center gap-1">
           <span>🏷</span>
-          <span>{item.source_tag || '—'}</span>
+          <span>{toSimplified(item.source_tag || '—')}</span>
         </p>
       </div>
 
@@ -226,7 +227,7 @@ function GoodsCard({
           }}
           className="flex-1 text-center py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
         >
-          複製交易流程
+          复制交易流程
         </button>
         {hasContract && (
           <button
@@ -236,7 +237,7 @@ function GoodsCard({
             }}
             className="flex-1 text-center py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
           >
-            下載合同
+            下载合同
           </button>
         )}
       </div>
@@ -292,10 +293,10 @@ function DetailModal({
         {/* Header */}
         <div className="flex items-start justify-between border-b border-gray-200 p-4">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{item.action_code || '無行動代號'}</h2>
+            <h2 className="text-xl font-bold text-gray-900">{toSimplified(item.action_code || '無行動代號')}</h2>
             <div className="flex items-center gap-3 mt-1 text-sm">
-              <span className={`px-2 py-0.5 rounded-full text-xs ${getStageColor(item.stage)}`}>{item.stage}</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(item.status)}`}>{item.status || '—'}</span>
+              <span className={`px-2 py-0.5 rounded-full text-xs ${getStageColor(item.stage)}`}>{toSimplified(item.stage)}</span>
+              <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(item.status)}`}>{toSimplified(item.status || '—')}</span>
               <span className="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">{item.code}</span>
             </div>
           </div>
@@ -308,7 +309,7 @@ function DetailModal({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-500">品牌/型號/儲存</p>
-              <p className="font-medium">{item.brand} {item.model} {item.storage}</p>
+              <p className="font-medium">{toSimplified(`${item.brand} ${item.model} ${item.storage}`)}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-500">數量</p>
@@ -323,25 +324,25 @@ function DetailModal({
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-500">來源</p>
-              <p className="font-medium">{item.source_tag || '—'}</p>
+              <p className="font-medium">{toSimplified(item.source_tag || '—')}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3 md:col-span-2">
               <p className="text-xs text-gray-500">交地/交期</p>
-              <p className="font-medium">{item.delivery_location || '—'} / {item.delivery_time || '—'}</p>
+              <p className="font-medium">{toSimplified(item.delivery_location || '—')} / {toSimplified(item.delivery_time || '—')}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-500">接受買方主體</p>
-              <p className="font-medium text-sm">{item.accepted_buyer_types?.join('、') || '—'}</p>
+              <p className="font-medium text-sm">{toSimplified(item.accepted_buyer_types?.join('、') || '—')}</p>
             </div>
             {hasGuarantee() && (
               <>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs text-gray-500">提供保函</p>
-                  <p className="font-medium text-sm">{item.guarantee_requirement || '—'}</p>
+                  <p className="font-medium text-sm">{toSimplified(item.guarantee_requirement || '—')}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs text-gray-500">付款方法</p>
-                  <p className="font-medium">{item.guarantee_status || '—'}</p>
+                  <p className="font-medium">{toSimplified(item.guarantee_status || '—')}</p>
                 </div>
               </>
             )}
@@ -356,11 +357,11 @@ function DetailModal({
                   onClick={() => onCopyRawMessage(item.trade_process || '無交易流程')}
                   className="px-3 py-1.5 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100"
                 >
-                  📋 複製交易流程
+                  📋 复制交易流程
                 </button>
               </div>
               <div className="bg-gray-50 rounded-lg p-4 whitespace-pre-wrap text-sm text-gray-700">
-                {item.trade_process}
+                {toSimplified(item.trade_process)}
               </div>
             </div>
           )}
@@ -381,7 +382,7 @@ function DetailModal({
                         {isImage && downloadUrl && (
                           <ImagePreview src={downloadUrl} alt={`配置圖片 ${idx + 1}`} />
                         )}
-                        <span className="text-sm text-gray-700 truncate max-w-md">{img}</span>
+                        <span className="text-sm text-gray-700 truncate max-w-md">{toSimplified(img)}</span>
                       </div>
                       <div className="flex gap-2">
                         {downloadUrl && (
@@ -398,7 +399,7 @@ function DetailModal({
                             onClick={() => onDownloadContract(item)}
                             className="px-3 py-1.5 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
                           >
-                            下載合同
+                            下载合同
                           </button>
                         )}
                       </div>
@@ -417,14 +418,14 @@ function DetailModal({
               onClick={() => onDownloadContract(item)}
               className="px-4 py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700"
             >
-              下載合同
+              下载合同
             </button>
           )}
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
           >
-            關閉
+            关闭
           </button>
         </div>
       </div>

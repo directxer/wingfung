@@ -1,7 +1,6 @@
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { Goods } from '@/types';
-import { createServerClient } from '@/lib/supabase';
 import GoodsList from '@/components/GoodsList';
 import VisitorCounter from '@/components/VisitorCounter';
 
@@ -13,8 +12,8 @@ export default function Home({ initialGoods }: HomeProps) {
   return (
     <>
       <Head>
-        <title>永豐算力顧問團隊 - 貨源管理看板</title>
-        <meta name="description" content="永豐算力顧問團隊：高價值硬體撮合 SMC B300、H200、H100 等伺服器/GPU 貨源查詢與分享" />
+        <title>永丰算力顾问团队 - 货源管理看板</title>
+        <meta name="description" content="永丰算力顾问团队：高价值硬件撮合 SMC B300、H200、H100 等服务器/GPU 货源查询与分享" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -28,8 +27,8 @@ export default function Home({ initialGoods }: HomeProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <h1 className="text-xl font-bold text-gray-900">永豐算力顧問團隊</h1>
-                <span className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 rounded-full">貨源看板</span>
+                <h1 className="text-xl font-bold text-gray-900">永丰算力顾问团队</h1>
+                <span className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 rounded-full">货源看板</span>
               </div>
               <VisitorCounter />
             </div>
@@ -42,7 +41,7 @@ export default function Home({ initialGoods }: HomeProps) {
 
         <footer className="bg-white border-t border-gray-200 mt-12">
           <div className="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-            <p>居間江湖內部工具 · 僅供團隊查詢分享 · 資料來源：Obsidian Vault</p>
+            <p>居间江湖内部工具 · 仅供团队查询分享 · 数据来源：Obsidian Vault</p>
           </div>
         </footer>
       </main>
@@ -50,23 +49,7 @@ export default function Home({ initialGoods }: HomeProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-  const supabase = createServerClient();
-
-  if (!supabase) {
-    return { props: { initialGoods: [] } };
-  }
-
-  const { data, error } = await supabase
-    .from('goods')
-    .select('*')
-    .order('updated_at', { ascending: false })
-    .limit(200);
-
-  if (error) {
-    console.error('Supabase error:', error);
-    return { props: { initialGoods: [] } };
-  }
-
-  return { props: { initialGoods: (data as Goods[]) || [] } };
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  // 靜態導出時不預取資料，由客戶端 fetch API
+  return { props: { initialGoods: [] } };
 };
