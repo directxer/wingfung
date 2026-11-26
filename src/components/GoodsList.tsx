@@ -18,8 +18,9 @@ export default function GoodsList({ initialGoods }: GoodsListProps) {
   useEffect(() => {
     if (initialGoods.length === 0) {
       // 直連 Vercel API，EdgeOne Pages 不支援 API Routes
+      // 注意：必須用 /api/goods/ (帶尾部斜線)，避免 308 重定向導致 CORS 問題
       const apiBase = 'https://wingfung.vercel.app';
-      fetch(`${apiBase}/api/goods`)
+      fetch(`${apiBase}/api/goods/`)
         .then((res) => res.json())
         .then((data) => {
           setGoods(data);
