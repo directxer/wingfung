@@ -35,6 +35,45 @@ export default function Home({ initialGoods }: HomeProps) {
           </div>
         </header>
 
+        {/* Announcement Banners */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+          {/* 1. Welcome to Telegram Group */}
+          <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <span className="font-medium text-primary-800">
+                  欢迎加入团队 Telegram 群组。入群后，有新货源会自动广播通知，即时掌握最新货源。
+                </span>
+              </div>
+              <a 
+                href="https://t.me/+Pbs_YzMj9g83NWFl" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13l-4.5 4.5V15h3v4h2v-4h3v-3h-3V9c0-1.66-1.34-3-3-3S8.5 7.34 8.5 9v2.5H6v3h2.5v6.5l4.5-4.5z"/>
+                </svg>
+                加入群组
+              </a>
+            </div>
+          </div>
+
+          {/* 2. Price Notice: Cost Price Only */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="flex items-center gap-2 text-amber-800">
+              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+              <span className="font-medium">价格说明：</span>
+              <span className="text-amber-700">本网站所有价钱均为<strong>来货价</strong>，未加上任何利润。</span>
+            </div>
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <GoodsList initialGoods={initialGoods} />
         </div>
