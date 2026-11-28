@@ -4,6 +4,16 @@ import { useState, useEffect, useMemo } from 'react';
 import { Goods } from '@/types';
 import { toSimplified } from '@/lib/zh-convert';
 
+// 價格格式化：>= 10000 萬顯示為 X.XX 億，否則顯示 X 萬
+function formatPrice(wans: number | undefined | null): string {
+  if (!wans || wans === 0) return '—';
+  if (wans >= 10000) {
+    const yi = wans / 10000;
+    return yi % 1 === 0 ? `${yi} 億` : `${yi.toFixed(2)} 億`;
+  }
+  return `${wans} 萬`;
+}
+
 interface GoodsListProps {
   initialGoods: Goods[];
 }
@@ -203,8 +213,8 @@ function GoodsCard({
         <p className="font-medium">{toSimplified(`${item.brand} ${item.model} ${item.storage}`)}</p>
         <p className="text-gray-600">{item.quantity} 台</p>
         <p className="font-semibold text-primary-600">
-          {item.base_price_rmb_wan ? `${item.base_price_rmb_wan} 萬 RMB` : ''}
-          {item.base_price_usd_wan ? ` / ${item.base_price_usd_wan} 萬 USD` : ''}
+          {item.base_price_rmb_wan ? formatPrice(item.base_price_rmb_wan) + ' RMB' : ''}
+          {item.base_price_usd_wan ? ` / ${formatPrice(item.base_price_usd_wan)} USD` : ''}
         </p>
         <p className="text-gray-500 flex items-center gap-1">
           <span>📍</span>
@@ -319,8 +329,8 @@ function DetailModal({
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-500">價格</p>
               <p className="font-medium text-primary-600">
-                {item.base_price_rmb_wan ? `${item.base_price_rmb_wan} 萬 RMB` : ''}
-                {item.base_price_usd_wan ? ` / ${item.base_price_usd_wan} 萬 USD` : ''}
+                {item.base_price_rmb_wan ? formatPrice(item.base_price_rmb_wan) + ' RMB' : ''}
+                {item.base_price_usd_wan ? ` / ${formatPrice(item.base_price_usd_wan)} USD` : ''}
               </p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
